@@ -1,0 +1,60 @@
+<.form for={@form} phx-submit="submit" class="space-y-4 max-w-lg mx-auto p-4 bg-white shadow-md rounded-lg">
+  <!-- Photo -->
+  <.input
+    field={@form[:photo]}
+    type="text"
+    label="Photo"
+    class="block w-full"
+  />
+
+  <!-- Title -->
+  <.input 
+    field={@form[:title]} 
+    type="text" 
+    label="Title" 
+    class="block w-full"
+  />
+
+  <!-- Description -->
+  <.input 
+    field={@form[:description]} 
+    type="textarea" 
+    label="Description" 
+    class="block w-full"
+  />
+
+  <!-- Category Dropdown -->
+  <.input 
+    field={@form[:category]} 
+    type="select" 
+    label="Category" 
+    options={["Clothing", "Jackets", "Trousers", "Sweaters", "Accessories", "Footwear"]} 
+    class="block w-full"
+  />
+
+  <!-- Price -->
+  <.input 
+    field={@form[:price]} 
+    type="number" 
+    step="0.01" 
+    label="Price ($)" 
+    class="block w-full"
+  />
+
+  <!-- Stock -->
+  <.input 
+    field={@form[:stock]} 
+    type="number" 
+    label="Stock Quantity" 
+    class="block w-full"
+  />
+
+  <!-- Submit Button -->
+  <div class="mt-6 text-right">
+    <.button 
+      type="submit" 
+      class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+      Update Product  <!-- Button text updated to reflect editing -->
+    </.button>
+  </div>
+</.form>

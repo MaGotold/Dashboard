@@ -1,0 +1,57 @@
+<div class="flex gap-2 mb-4">
+  <h1 class="grow text-2xl font-bold">Products</h1>
+
+  <.link navigate={~p"/products/new"}
+    class="bg-black border border-black hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-md"
+  >
+    Add product
+  </.link>
+</div>
+
+<div class="flex flex-wrap gap-6">
+  <div :for={product <- @products} class="flex-shrink-0 w-full sm:w-1/2 lg:w-1/3 xl:w-1/4">
+    <div class="border rounded-lg p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
+      <div class="mb-4">
+        <!-- Conditional Image Display -->
+        <%= if product.photo do %>
+          <img src={product.photo} alt={product.title} class="w-full h-48 object-cover rounded-lg mb-4" />
+        <% else %>
+          <!-- Display placeholder image if no photo -->
+          <img src="https://via.placeholder.com/300x200?text=No+Image" alt="No Image" class="w-full h-48 object-cover rounded-lg mb-4" />
+        <% end %>
+      </div>
+      <div class="space-y-2">
+        <!-- Title -->
+        <h2 class="text-xl font-semibold text-gray-900"><%= product.title %></h2>
+
+        <!-- Description -->
+        <p class="text-gray-700 text-sm"><%= product.description %></p>
+
+        <!-- Category -->
+        <p class="text-gray-600 text-xs">Category: <%= product.category %></p>
+
+        <!-- Price -->
+        <p class="text-gray-900 font-bold text-lg">Price: $<%= product.price %></p>
+
+        <!-- Stock -->
+        <p class="text-gray-500 text-sm">Stock: <%= product.stock %></p>
+
+        <!-- Delete Button -->
+        <button 
+          phx-click="delete_product" 
+          phx-value-id={product.id} 
+          class="bg-red-600 text-white p-2 rounded-md hover:bg-red-700"
+        >
+          Delete
+        </button>
+        <.link
+            phx-click="edit_product"
+            phx-value-id={product.id}
+            class="bg-yellow-500 text-white p-2 rounded-md hover:bg-yellow-600"
+          >
+            Edit
+          </.link>
+      </div>
+    </div>
+  </div>
+</div>
