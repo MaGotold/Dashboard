@@ -17,11 +17,18 @@ defmodule Demo.Products do
       [%Product{}, ...]
 
   """
-  def list_products(user_id) do
-    Repo.all(
-      from p in Product,
-      where: p.user_id == ^user_id
-    )
+  def list_products(user_id, filters \\ %{}) do
+    query = Product
+           |> where([p], p.user_id == ^user_id)
+
+    # Filter by category if provided
+    query = if filters[:category] do
+      query |> where([p], p.category == ^filters[:category])
+    else
+      query
+    end
+
+    Repo.all(query)
   end
 
   @doc """

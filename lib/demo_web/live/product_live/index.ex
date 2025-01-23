@@ -6,9 +6,22 @@ defmodule DemoWeb.ProductLive.Index do
   alias DemoWeb.Router.Helpers, as: Routes
 
 
-  def mount(_params, _session, socket) do
+  def mount(params, _session, socket) do
+    IO.puts("Mounting ProductLive.Index")
+
     user_id = socket.assigns.current_user.id
-    socket = assign(socket, :products, Products.list_products(user_id))
+
+    # Get the category filter from params
+    filters = %{
+      category: params["category"]
+    }
+
+    IO.inspect(filters, label: "Filters in mount")
+
+
+    products = Products.list_products(user_id, filters)
+
+    socket = assign(socket, :products, products)
     {:ok, socket}
   end
 
@@ -39,6 +52,22 @@ defmodule DemoWeb.ProductLive.Index do
     # This will trigger a redirect to the edit page, and pass the product's ID in the URL
     {:noreply, push_navigate(socket, to: "/products/#{product.id}/edit")}
   end
+
+  @impl true
+  def handle_event("filter_products", %{"category" => category}, socket) do
+  IO.inspect(category, label: "Category Selected")
+
+  user_id = socket.assigns.current_user.id
+
+  # Apply the category filter
+  filters = %{
+    category: category
+  }
+
+  products = Products.list_products(user_id, filters)
+
+  {:noreply, assign(socket, :products, products)}
+end
 
 
 end
