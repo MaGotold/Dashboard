@@ -11,17 +11,26 @@ defmodule DemoWeb.ProductLive.Index do
 
     user_id = socket.assigns.current_user.id
 
-    # Get the category filter from params
+    # Get category and price_sort filters from params (with defaults)
+    category = params["category"] || ""
+    price_sort = params["price_sort"] || ""
+
+    # Combine filters into a map
     filters = %{
-      category: params["category"]
+      category: category,
+      price_sort: price_sort
     }
 
     IO.inspect(filters, label: "Filters in mount")
 
-
+    # Fetch the products based on the filters
     products = Products.list_products(user_id, filters)
 
+    # Use assign/3 to update socket with products and filters
     socket = assign(socket, :products, products)
+    socket = assign(socket, :selected_category, category)
+    socket = assign(socket, :selected_price_sort, price_sort)
+
     {:ok, socket}
   end
 
@@ -57,21 +66,28 @@ defmodule DemoWeb.ProductLive.Index do
     {:noreply, push_navigate(socket, to: "/products/#{product.id}/edit")}
   end
 
-  @impl true
-  def handle_event("filter_products", %{"category" => category}, socket) do
-  IO.inspect(category, label: "Category Selected")
+  def handle_event("filter_products", %{"category" => category, "price_sort" => price_sort}, socket) do
+    IO.inspect(category, label: "Category Selected")
+    IO.inspect(price_sort, label: "Price Sort Selected")
 
-  user_id = socket.assigns.current_user.id
+    user_id = socket.assigns.current_user.id
 
-  # Apply the category filter
-  filters = %{
-    category: category
-  }
+    # Create the filters map with the updated category and price_sort
+    filters = %{
+      category: category,
+      price_sort: price_sort
+    }
 
-  products = Products.list_products(user_id, filters)
+    # Get products based on filters (category and price_sort)
+    products = Products.list_products(user_id, filters)
 
-  {:noreply, assign(socket, :products, products)}
-end
+    # Use assign/3 to update the socket
+    socket = assign(socket, :products, products)
+    socket = assign(socket, :selected_category, category)
+    socket = assign(socket, :selected_price_sort, price_sort)
+
+    {:noreply, socket}
+  end
 
 
 end

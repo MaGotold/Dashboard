@@ -17,19 +17,26 @@ defmodule Demo.Products do
       [%Product{}, ...]
 
   """
-  def list_products(user_id, filters \\ %{}) do
-    query = Product
-           |> where([p], p.user_id == ^user_id)
+ def list_products(user_id, filters \\ %{}) do
+  query =
+    from(p in Product, where: p.user_id == ^user_id)
 
-    # Apply category filter only if it is present and not empty
-    query = if filters[:category] && filters[:category] != "" do
-      query |> where([p], p.category == ^filters[:category])
-    else
-      query
-    end
-
-    Repo.all(query)
+  # Apply category filter if present
+  query = case filters[:category] do
+    "" -> query
+    nil -> query
+    category -> from(p in query, where: p.category == ^category)
   end
+
+  # Apply price sorting if present
+  query = case filters[:price_sort] do
+    "asc" -> from(p in query, order_by: [asc: p.price])
+    "desc" -> from(p in query, order_by: [desc: p.price])
+    _ -> query
+  end
+
+  Repo.all(query)
+end
 
   @doc """
   Gets a single product.
