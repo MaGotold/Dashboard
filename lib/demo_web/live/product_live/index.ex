@@ -65,17 +65,17 @@ defmodule DemoWeb.ProductLive.Index do
     end
   end
 
-  def handle_event("filter_products", %{"category" => category, "price_sort" => price_sort}, socket) do
-    # Reset category to empty string if "All Categories" is selected, otherwise keep the selected category
+  @impl true
+  def handle_event("filter_category", %{"category_filter" => category}, socket) do
+    IO.inspect(category, label: "Category Filter Value")  
+
     selected_category =
       case category do
-        "" -> ""  # Reset to "All Categories" when the empty value is selected
-        _ -> category  # Keep the selected category if one is chosen
+        "" -> ""
+        _ -> category
       end
 
-    # Only update price_sort if it's explicitly set, else keep the current value
-    selected_price_sort =
-      if price_sort != "", do: price_sort, else: socket.assigns.selected_price_sort
+    selected_price_sort = socket.assigns.selected_price_sort
 
     filters = %{
       category: selected_category,
@@ -86,9 +86,31 @@ defmodule DemoWeb.ProductLive.Index do
 
     socket = assign(socket, :products, products)
     socket = assign(socket, :selected_category, selected_category)
+
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("filter_price_sort", %{"price_sort_filter" => price_sort}, socket) do
+    selected_category = socket.assigns.selected_category
+
+    selected_price_sort =
+      case price_sort do
+        "" -> ""
+        _ -> price_sort
+      end
+
+    filters = %{
+      category: selected_category,
+      price_sort: selected_price_sort
+    }
+
+    products = Products.list_products(filters)
+
+    socket = assign(socket, :products, products)
     socket = assign(socket, :selected_price_sort, selected_price_sort)
 
     {:noreply, socket}
   end
-  
+
 end

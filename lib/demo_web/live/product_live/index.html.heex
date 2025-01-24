@@ -10,7 +10,7 @@
 <form phx-change="filter_products">
   <div class="mb-4 flex gap-2">
     <!-- Category Filter -->
-    <select id="category-filter" name="category" class="bg-black border border-black hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-md">
+    <select phx-change="filter_category" name="category_filter" id="category_filter" class="bg-black border border-black hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-md">
       <option value="">All Categories</option>
       <option value="Clothing">Clothing</option>
       <option value="Jackets">Jackets</option>
@@ -21,7 +21,7 @@
     </select>
 
     <!-- Price Sorting Filter -->
-    <select id="price-sort-filter" name="price_sort" class="bg-black border border-black hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-md">
+    <select phx-change="filter_price_sort" id="filter_price_sort" name="price_sort_filter" class="bg-black border border-black hover:bg-gray-700 text-white font-bold py-2 px-3 rounded-md">
       <option value="">Sort by Price</option>
       <option value="asc">Price: Low to High</option>
       <option value="desc">Price: High to Low</option>
