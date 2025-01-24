@@ -67,16 +67,16 @@ defmodule Seeds do
     products = Repo.all(Product)
 
     transactions = [
-      %{product_id: 2, quantity: 2, transaction_date: ~U[2025-01-01 10:30:00Z]},
-      %{product_id: 3, quantity: 1, transaction_date: ~U[2025-01-02 14:00:00Z]},
-      %{product_id: 4, quantity: 1, transaction_date: ~U[2025-01-03 09:15:00Z]},
-      %{product_id: 5, quantity: 1, transaction_date: ~U[2025-02-04 11:45:00Z]},
-      %{product_id: 6, quantity: 3, transaction_date: ~U[2025-02-05 08:00:00Z]},
-      %{product_id: 7, quantity: 2, transaction_date: ~U[2025-02-06 17:30:00Z]},
-      %{product_id: 8, quantity: 1, transaction_date: ~U[2025-03-07 12:00:00Z]},
-      %{product_id: 9, quantity: 5, transaction_date: ~U[2025-03-08 16:20:00Z]},
-      %{product_id: 10, quantity: 10, transaction_date: ~U[2025-02-09 19:00:00Z]},
-      %{product_id: 11, quantity: 1, transaction_date: ~U[2025-01-10 13:45:00Z]}
+      %{product_id: 1, quantity: 2, transaction_date: ~U[2025-01-01 10:30:00Z]},
+      %{product_id: 2, quantity: 1, transaction_date: ~U[2025-01-02 14:00:00Z]},
+      %{product_id: 3, quantity: 1, transaction_date: ~U[2025-01-03 09:15:00Z]},
+      %{product_id: 4, quantity: 1, transaction_date: ~U[2025-02-04 11:45:00Z]},
+      %{product_id: 5, quantity: 3, transaction_date: ~U[2025-02-05 08:00:00Z]},
+      %{product_id: 6, quantity: 2, transaction_date: ~U[2025-02-06 17:30:00Z]},
+      %{product_id: 7, quantity: 1, transaction_date: ~U[2025-03-07 12:00:00Z]},
+      %{product_id: 8, quantity: 5, transaction_date: ~U[2025-03-08 16:20:00Z]},
+      %{product_id: 9, quantity: 10, transaction_date: ~U[2025-02-09 19:00:00Z]},
+      %{product_id: 10, quantity: 1, transaction_date: ~U[2025-01-10 13:45:00Z]}
     ]
 
     Enum.each(transactions, fn %{product_id: product_id, quantity: quantity, transaction_date: transaction_date} ->
