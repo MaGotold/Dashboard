@@ -21,8 +21,8 @@ defmodule Demo.Products do
     query = Product
            |> where([p], p.user_id == ^user_id)
 
-    # Filter by category if provided
-    query = if filters[:category] do
+    # Apply category filter only if it is present and not empty
+    query = if filters[:category] && filters[:category] != "" do
       query |> where([p], p.category == ^filters[:category])
     else
       query
