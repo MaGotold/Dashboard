@@ -50,6 +50,16 @@ defmodule Seeds do
       _user ->
         IO.puts("User already exists")
     end
+
+    case Repo.get(User, 2) do
+      nil ->
+        %Demo.Users.User{}
+        |> User.registration_changeset(%{email: "seconduser@example.com", password: "password1234!"})
+        |> Repo.insert!()
+
+      _user ->
+        IO.puts("Second user already exists")
+    end
   end
 
   def insert_random_transactions do
