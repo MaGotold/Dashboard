@@ -17,9 +17,8 @@ defmodule Demo.Products do
       [%Product{}, ...]
 
   """
- def list_products(user_id, filters \\ %{}) do
-  query =
-    from(p in Product, where: p.user_id == ^user_id)
+ def list_products(filters \\ %{}) do
+  query = from(p in Product)
 
   # Apply category filter if present
   query = case filters[:category] do
@@ -37,6 +36,7 @@ defmodule Demo.Products do
 
   Repo.all(query)
 end
+
 
   @doc """
   Gets a single product.
@@ -102,8 +102,15 @@ end
       {:error, %Ecto.Changeset{}}
 
   """
-  def delete_product(%Product{} = product) do
-    Repo.delete(product)
+  def delete_product(%Product{id: id}) do
+    product = Repo.get(Product, id)
+
+    case product do
+      nil ->
+        {:error, :not_found}
+      %Product{} ->
+        Repo.delete(product)
+    end
   end
 
   @doc """

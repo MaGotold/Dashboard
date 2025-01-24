@@ -1,5 +1,6 @@
 defmodule DemoWeb.Endpoint do
-  use Phoenix.Endpoint, otp_app: :demo
+  use Phoenix.Endpoint, otp_app: :demo,
+    pubsub_server: Demo.PubSub  # This should be part of the `use` line
 
   # The session will be stored in the cookie and signed,
   # this means its contents can be read but not tampered with.
@@ -15,18 +16,13 @@ defmodule DemoWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  # Serve at "/" the static files from "priv/static" directory.
-  #
-  # You should set gzip to true if you are running phx.digest
-  # when deploying your static files in production.
+  # Plug configuration for serving static files and other plugs
   plug Plug.Static,
     at: "/",
     from: :demo,
     gzip: false,
     only: DemoWeb.static_paths()
 
-  # Code reloading can be explicitly enabled under the
-  # :code_reloader configuration of your endpoint.
   if code_reloading? do
     socket "/phoenix/live_reload/socket", Phoenix.LiveReloader.Socket
     plug Phoenix.LiveReloader

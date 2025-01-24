@@ -10,7 +10,6 @@ defmodule DemoWeb.ProductLive.New do
   end
 
 def handle_event("submit", %{"product" => product_params}, socket) do
-    # Ensure that user_id is added to the params
     product_params = Map.put(product_params, "user_id", socket.assigns.current_user.id)
 
 

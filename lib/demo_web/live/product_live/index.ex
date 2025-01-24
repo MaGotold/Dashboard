@@ -5,17 +5,15 @@ defmodule DemoWeb.ProductLive.Index do
   alias Demo.Products.Product
   alias DemoWeb.Router.Helpers, as: Routes
 
-
+  @impl true
   def mount(params, _session, socket) do
     IO.puts("Mounting ProductLive.Index")
 
     user_id = socket.assigns.current_user.id
 
-    # Get category and price_sort filters from params (with defaults)
     category = params["category"] || ""
     price_sort = params["price_sort"] || ""
 
-    # Combine filters into a map
     filters = %{
       category: category,
       price_sort: price_sort
@@ -23,10 +21,12 @@ defmodule DemoWeb.ProductLive.Index do
 
     IO.inspect(filters, label: "Filters in mount")
 
-    # Fetch the products based on the filters
-    products = Products.list_products(user_id, filters)
+    products = Products.list_products(filters)
 
-    # Use assign/3 to update socket with products and filters
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Demo.PubSub, "product_feed")
+    end
+
     socket = assign(socket, :products, products)
     socket = assign(socket, :selected_category, category)
     socket = assign(socket, :selected_price_sort, price_sort)
@@ -34,60 +34,61 @@ defmodule DemoWeb.ProductLive.Index do
     {:ok, socket}
   end
 
-
   @impl true
-  def handle_event("delete_product", %{"id" => product_id}, socket) do
-    IO.puts("Trying to delete product with ID: #{product_id}")
-
-    case Products.get_product!(product_id) do
-      nil ->
-        {:noreply, socket}
-
-      %Product{} = product ->
-        IO.puts("Deleting product with ID: #{product.id}")  # Log after the product is fetched
-
-        # Call your delete_product function here
-        Products.delete_product(product)
-
-        # Remove the product from the list in the socket state
-        products = Products.list_products()
-        {:noreply, assign(socket, :products, products)}
-    end
+  def handle_info({:new_product, product}, socket) do
+    products = [product | socket.assigns.products]
+    {:noreply, assign(socket, :products, products)}
   end
 
   @impl true
   def handle_event("edit_product", %{"id" => id}, socket) do
-    IO.inspect(id, label: "Product ID received")
+    product_id = String.to_integer(id)
+    product = Products.get_product!(product_id)
 
-    product = Products.get_product!(id)
-    #path = Routes.product_edit_path(socket, :edit, id)
+  {:noreply, push_navigate(socket, to: ~p"/products/#{product.id}/edit")}
+  end
 
-    # This will trigger a redirect to the edit page, and pass the product's ID in the URL
-    {:noreply, push_navigate(socket, to: "/products/#{product.id}/edit")}
+  def handle_event("delete_product", %{"id" => id}, socket) do
+    product = Enum.find(socket.assigns.products, fn p -> p.id == String.to_integer(id) end)
+
+    if product do
+      case Demo.Products.delete_product(product) do
+        {:ok, _product} ->
+          products = Enum.reject(socket.assigns.products, fn p -> p.id == product.id end)
+          {:noreply, assign(socket, :products, products)}
+
+        {:error, :not_found} ->
+          {:noreply, socket}
+      end
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_event("filter_products", %{"category" => category, "price_sort" => price_sort}, socket) do
-    IO.inspect(category, label: "Category Selected")
-    IO.inspect(price_sort, label: "Price Sort Selected")
+    # Reset category to empty string if "All Categories" is selected, otherwise keep the selected category
+    selected_category =
+      case category do
+        "" -> ""  # Reset to "All Categories" when the empty value is selected
+        _ -> category  # Keep the selected category if one is chosen
+      end
 
-    user_id = socket.assigns.current_user.id
+    # Only update price_sort if it's explicitly set, else keep the current value
+    selected_price_sort =
+      if price_sort != "", do: price_sort, else: socket.assigns.selected_price_sort
 
-    # Create the filters map with the updated category and price_sort
     filters = %{
-      category: category,
-      price_sort: price_sort
+      category: selected_category,
+      price_sort: selected_price_sort
     }
 
-    # Get products based on filters (category and price_sort)
-    products = Products.list_products(user_id, filters)
+    products = Products.list_products(filters)
 
-    # Use assign/3 to update the socket
     socket = assign(socket, :products, products)
-    socket = assign(socket, :selected_category, category)
-    socket = assign(socket, :selected_price_sort, price_sort)
+    socket = assign(socket, :selected_category, selected_category)
+    socket = assign(socket, :selected_price_sort, selected_price_sort)
 
     {:noreply, socket}
   end
-
-
+  
 end
