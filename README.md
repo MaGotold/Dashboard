@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Demo
 
 To start your Phoenix server:
@@ -16,3 +17,6 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+=======
+# Dashboard
+>>>>>>> ec3ee702f5d2ca240b7841570cf3f9cd65f16c4d
