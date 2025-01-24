@@ -28,11 +28,15 @@ defmodule DemoWeb.ProductLive.Index do
 
   @impl true
   def handle_event("delete_product", %{"id" => product_id}, socket) do
+    IO.puts("Trying to delete product with ID: #{product_id}")
+
     case Products.get_product!(product_id) do
       nil ->
         {:noreply, socket}
 
       %Product{} = product ->
+        IO.puts("Deleting product with ID: #{product.id}")  # Log after the product is fetched
+
         # Call your delete_product function here
         Products.delete_product(product)
 

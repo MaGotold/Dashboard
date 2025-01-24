@@ -72,6 +72,8 @@ defmodule DemoWeb.Router do
       live "/products", ProductLive.Index
       live "/products/new", ProductLive.New
       live "/products/:id/edit", ProductLive.Edit, :edit
+
+      live "/dashboard", DashboardLive.Dashboard
     end
   end
 

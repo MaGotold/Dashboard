@@ -25,5 +25,4 @@ defmodule Demo.Products.Product do
   def change_product(product) do
     changeset(product, %{})
   end
-  
 end
