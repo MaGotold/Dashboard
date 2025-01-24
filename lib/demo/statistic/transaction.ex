@@ -6,7 +6,7 @@ defmodule Demo.Statistic.Transaction do
     field :quantity, :integer
     field :total_price, :decimal
     field :transaction_date, :utc_datetime
-    belongs_to :product, Demo.Products.Product  # Foreign key to the products table
+    belongs_to :product, Demo.Products.Product  
 
     timestamps(type: :utc_datetime)
   end

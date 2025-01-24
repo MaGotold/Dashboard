@@ -104,38 +104,32 @@ defmodule Demo.Statistic do
   end
 
   def get_total_stock do
-    # Create a query to sum the 'stock' field
     query = from p in Product, select: sum(p.stock)
-    # Execute the query and return the sum, defaulting to 0 if the result is nil
     Repo.one(query) || 0
   end
 
-
+  # This query joins the Product table and groups by product_id and product title
   def get_best_selling_products do
-    # Create a query that joins the Product table and groups by product_id and product title
     query = from t in Transaction,
-            join: p in Product, on: p.id == t.product_id,  # Assuming Product has an `id` field
-            group_by: [t.product_id, p.title],  # Grouping by both product_id and product title
+            join: p in Product, on: p.id == t.product_id,
+            group_by: [t.product_id, p.title],
             select: %{product_title: p.title, total_sales: sum(t.total_price)},
-            order_by: [desc: sum(t.total_price)]  # Ordering by total_sales in descending order
+            order_by: [desc: sum(t.total_price)]
 
-    # Execute the query to get the total sales and product titles
     Repo.all(query)
   end
 
 
+  # This query return sales by product for the selected month
   def get_product_sales_by_month(year, month) do
-    # Query to get sales by product for the selected month
     query = from t in Transaction,
-            join: p in Product, on: p.id == t.product_id,  # Assuming Product table has id and is related to Transaction
+            join: p in Product, on: p.id == t.product_id,
             where: fragment("EXTRACT(YEAR FROM ?)", t.transaction_date) == ^year and fragment("EXTRACT(MONTH FROM ?)", t.transaction_date) == ^month,
-            group_by: [p.id, p.title],  # Grouping by product id and title
+            group_by: [p.id, p.title],
             select: %{product_title: p.title, total_quantity: sum(t.quantity)}
 
-    # Execute the query
     product_sales = Repo.all(query)
 
-    # Now, we calculate the total sum of all product quantities for the selected month
     total_quantity_query = from t in Transaction,
                             where: fragment("EXTRACT(YEAR FROM ?)", t.transaction_date) == ^year and fragment("EXTRACT(MONTH FROM ?)", t.transaction_date) == ^month,
                             select: sum(t.quantity)
@@ -143,5 +137,18 @@ defmodule Demo.Statistic do
     total_quantity = Repo.one(total_quantity_query)
 
     {product_sales, total_quantity}
+  end
+
+
+
+  # This query returns years and their corresponding months based on transaction_date
+  def get_available_years_and_months do
+    Repo.all(
+      from t in Transaction,
+      select: {fragment("EXTRACT(YEAR FROM ?)", t.transaction_date), fragment("EXTRACT(MONTH FROM ?)", t.transaction_date)},
+      distinct: true
+    )
+    |> Enum.group_by(fn {year, month} -> year end)
+    |> Enum.map(fn {year, months} -> {year, Enum.map(months, fn {_year, month} -> month end)} end)
   end
 end
